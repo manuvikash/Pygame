@@ -1,10 +1,10 @@
 import pygame
 pygame.init()
-print(Start)
+print("Start")
 
 win = pygame.display.set_mode((600,390))
 
-pygame.display.set_caption("First Game")
+pygame.display.set_caption("Goblin Dungeon")
 
 walkRight = [pygame.image.load('R1.png'), pygame.image.load('R2.png'), pygame.image.load('R3.png'), pygame.image.load('R4.png'), pygame.image.load('R5.png'), pygame.image.load('R6.png'), pygame.image.load('R7.png'), pygame.image.load('R8.png'), pygame.image.load('R9.png')]
 walkLeft = [pygame.image.load('L1.png'), pygame.image.load('L2.png'), pygame.image.load('L3.png'), pygame.image.load('L4.png'), pygame.image.load('L5.png'), pygame.image.load('L6.png'), pygame.image.load('L7.png'), pygame.image.load('L8.png'), pygame.image.load('L9.png')]
@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 
 bulletSound=pygame.mixer.Sound('bullet.wav')
 hitSound=pygame.mixer.Sound('hit.wav')
-music=pygame.mixer.Sound('music.wav')
+music=pygame.mixer.Sound('music.mp3')
 music.set_volume(0.3)
 music.play(-1)
 
@@ -56,10 +56,24 @@ class player(object):
 
     def hit(self):
         self.alive=False
-        Font=pygame.font.SysFont('comicsans',100,True)
-        Font2=pygame.font.SysFont('comicsans',40)
+        hsf = open('highScore.txt', 'r')
+        hs = int(hsf.read())
+        hsf.close()
+        score=goblin.hitNumber + goblin2.hitNumber
+        Font=pygame.font.SysFont('comicsans',80,True)
+        Font2=pygame.font.SysFont('comicsans',30)
         text2=Font2.render('Press Enter to restart', 1 , (255,0,0))
         text=Font.render('GAME OVER', 1, (255,255,255))
+        Font3 = pygame.font.SysFont('comicsans',30,True)
+        text3 = Font3.render(f'Highscore: {hs}', 1, (255,255,255))
+        
+        if(hs<score):
+            hsf = open('highScore.txt', 'w')
+            hsf.write(str(score))
+            hsf.close()
+            text3 = Font3.render('New Highscore!', 1, (255,255,255))
+        
+        win.blit(text3,(250-(text.get_width()/2),20))
         win.blit(text,(250-(text.get_width()/2),100))
         win.blit(text2,(250-(text.get_width()/2),200))
         pygame.display.update()
@@ -114,9 +128,9 @@ class enemy(object):
              win.blit(self.walkLeft[self.walkCount//3],(self.x,self.y))
              self.walkCount += 1
         if self.vel > 0:
-            self.hitbox=(self.x+15,self.y+2,25,57)
+            self.hitbox=(self.x+15,self.y+8,20,45)
         else:
-            self.hitbox=(self.x+25,self.y+2,25,57)
+            self.hitbox=(self.x+27,self.y+8,20,45)
 
         #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
 
@@ -151,10 +165,10 @@ def start():
         win.blit(bg,(0,0))
         font=pygame.font.SysFont('comicsans',80)
         text=font.render('Goblin Dungeon', 1, (255,255,255))
-        win.blit(text,(100,20))
+        win.blit(text,(20,10))
         font2=pygame.font.SysFont('comicsans',40)
         text2=font2.render('Press Enter to start', 1, (255,0,0))  
-        win.blit(text2,(200,350)) 
+        win.blit(text2,(100,300)) 
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -171,7 +185,7 @@ def redrawGameWindow():
     Font=pygame.font.SysFont('comicsans',30,True)
     text=Font.render("Score: "+ str(score),1,(255,255,255))
     win.blit(bg, (0,0))
-    win.blit(text,(450,10))
+    win.blit(text,(400,10))
     man.draw(win)
     goblin.draw(win)
     goblin2.draw(win)
@@ -251,7 +265,7 @@ while run:
                 facing = 1
             
             if len(bullets) < 5:
-                bullets.append(projectile(round(man.x + man.width //2), round(man.y + man.height//2), 5, (0,0,255), facing))
+                bullets.append(projectile(round(man.x + man.width //2), round(man.y + man.height//2), 5, (255, 153, 0), facing))
                 shootDelay+=1
     
         if keys[pygame.K_LEFT] and man.x > man.vel:
